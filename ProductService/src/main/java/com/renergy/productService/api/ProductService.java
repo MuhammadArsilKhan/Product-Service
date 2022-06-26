@@ -6,11 +6,19 @@ import com.renergy.productService.productCategory.ProductCategory;
 import com.renergy.productService.productCategory.ProductCategoryRepository;
 import com.renergy.productService.requestMappers.ProductInventoryMapper;
 import com.renergy.productService.responses.DefaultResponse;
+import com.renergy.productService.responses.ImageIdResponse;
+import com.renergy.productService.responses.UploadFileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @Service
@@ -21,6 +29,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Value("${renergy.images.folder}")
+    private String renergy_images_folder;
 
     Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -54,5 +65,41 @@ public class ProductService {
     }
 
 
+    public ImageIdResponse addProductImage(MultipartFile multipartFile) {
+
+        String name = UUID.randomUUID().toString();
+        //Saving image in Folder
+        uploadImage(multipartFile, name);
+
+        ImageIdResponse imageIdResponse = new ImageIdResponse();
+        imageIdResponse.setImageUuid(name);
+        return imageIdResponse;
+
+    }
+
+    private UploadFileResponse uploadImage(MultipartFile file, String fileName)
+    {
+        UploadFileResponse response = null;
+
+        String fileUrl;
+        try {
+
+            fileName = fileName + ".jpg";
+            Path fileStorageLocation= Paths.get(renergy_images_folder);
+            // Copy file to the target location (Replacing existing file with the same name)
+            Path targetLocation = fileStorageLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            fileUrl = (fileStorageLocation.toString())+"/"+fileName;
+            System.out.println("file path "+ fileUrl);
+            response = new UploadFileResponse("Success",fileUrl,fileName);
+            return response;
+
+        }
+        catch (Exception e){
+            System.out.println(e);
+            return response = new UploadFileResponse("Failure","","");
+        }
+
+    }
 
 }

@@ -28,6 +28,8 @@ public class ProductCategory {
 
     private String uuid;
 
+    private String imageName;
+
     @OneToMany(mappedBy = "productCategory" , fetch = FetchType.LAZY)
     private List<Product> productList = new ArrayList<>();
 }

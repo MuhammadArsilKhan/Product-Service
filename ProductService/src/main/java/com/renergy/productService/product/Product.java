@@ -42,6 +42,8 @@ public class Product {
 
     private String efficiency;
 
+    private String imageName;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_category_id",referencedColumnName = "id")
