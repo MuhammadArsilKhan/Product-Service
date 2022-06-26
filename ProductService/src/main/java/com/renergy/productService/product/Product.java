@@ -36,6 +36,12 @@ public class Product {
 
     private String uuid;
 
+    private String voltage;
+
+    private String power;
+
+    private String efficiency;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_category_id",referencedColumnName = "id")
