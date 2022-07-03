@@ -1,8 +1,10 @@
 package com.renergy.productService.api.productCategory;
 
 import com.renergy.productService.productCategory.ProductCategory;
+import com.renergy.productService.requestMappers.MainProductMapper;
 import com.renergy.productService.responses.DefaultResponse;
 import com.renergy.productService.responses.ImageIdResponse;
+import com.renergy.productService.responses.ParentProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,4 +42,17 @@ public class ProductCategoryController {
     ImageIdResponse addCategoryImage(@RequestParam("imageFile") MultipartFile multipartFile) {
         return productCategoryService.addCategoryImage(multipartFile);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value="/all-products")
+    public @ResponseBody
+    List<ProductCategory> getAllMainProducts() {
+        return productCategoryService.getAllMainProductCategories();
+    }
+
+    @RequestMapping(method = RequestMethod.POST,value="/add-product")
+    public @ResponseBody
+    DefaultResponse addParentProduct(@RequestBody MainProductMapper mainProductMapper) {
+        return productCategoryService.addParentProduct(mainProductMapper.getProductName());
+    }
+
 }

@@ -6,15 +6,20 @@ import com.renergy.productService.productCategory.ProductCategory;
 import com.renergy.productService.productCategory.ProductCategoryRepository;
 import com.renergy.productService.requestMappers.ProductInventoryMapper;
 import com.renergy.productService.responses.DefaultResponse;
+import com.renergy.productService.responses.DownloadDocumentResponse;
 import com.renergy.productService.responses.ImageIdResponse;
 import com.renergy.productService.responses.UploadFileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -100,6 +105,50 @@ public class ProductService {
             return response = new UploadFileResponse("Failure","","");
         }
 
+    }
+
+    public UploadFileResponse uploadProductManual(MultipartFile file)
+    {
+        UploadFileResponse response = null;
+        String fileName = UUID.randomUUID().toString();
+        String fileUrl;
+        try {
+
+            fileName = fileName + ".pdf";
+            Path fileStorageLocation= Paths.get(renergy_images_folder);
+            // Copy file to the target location (Replacing existing file with the same name)
+            Path targetLocation = fileStorageLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            fileUrl = (fileStorageLocation.toString())+"/"+fileName;
+            System.out.println("file path "+ fileUrl);
+            response = new UploadFileResponse("Success",fileUrl,fileName);
+            return response;
+
+        }
+        catch (Exception e){
+            System.out.println(e);
+            return response = new UploadFileResponse("Failure","","");
+        }
+
+    }
+
+    public ResponseEntity downloadDocuments(String productId) throws IOException {
+
+        try {
+
+            Optional<Product> product = productRepository.findByUuid(productId);
+            if(product.isPresent()) {
+                File file = new File(product.get().getManualPath());
+                byte[] content = Files.readAllBytes(file.toPath());
+                DownloadDocumentResponse downloadDocumentResponse = new DownloadDocumentResponse(content, product.get().getProductName()+".pdf");
+                return new ResponseEntity(downloadDocumentResponse, HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity("No product found", HttpStatus.NO_CONTENT);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            return new ResponseEntity(e.getMessage(), HttpStatus.OK);
+        }
     }
 
 }

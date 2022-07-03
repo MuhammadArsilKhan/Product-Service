@@ -23,13 +23,22 @@ public class ProductCategory {
     @NonNull
     private String categoryName;
 
-    @NonNull
     private String categoryDescription;
 
     private String uuid;
 
     private String imageName;
 
+    private String parentCategoryUUID;
+
     @OneToMany(mappedBy = "productCategory" , fetch = FetchType.LAZY)
     private List<Product> productList = new ArrayList<>();
+
+    @ManyToOne
+    private ProductCategory parentCategory;
+
+    @OneToMany(mappedBy = "parentCategory" , fetch = FetchType.EAGER)
+    private List<ProductCategory> subCategories = new ArrayList<>();
+
+
 }

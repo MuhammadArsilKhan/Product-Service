@@ -4,11 +4,15 @@ import com.renergy.productService.product.Product;
 import com.renergy.productService.productCategory.ProductCategory;
 import com.renergy.productService.requestMappers.ProductInventoryMapper;
 import com.renergy.productService.responses.DefaultResponse;
+import com.renergy.productService.responses.DownloadDocumentResponse;
 import com.renergy.productService.responses.ImageIdResponse;
+import com.renergy.productService.responses.UploadFileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -41,6 +45,18 @@ public class ProductController {
     public @ResponseBody
     ImageIdResponse addCategoryImage(@RequestParam("imageFile") MultipartFile multipartFile) {
         return productService.addProductImage(multipartFile);
+    }
+
+    @RequestMapping(method = RequestMethod.POST,value="/productManual")
+    public @ResponseBody
+    UploadFileResponse addProductManual(@RequestParam("manualFile") MultipartFile multipartFile) {
+        return productService.uploadProductManual(multipartFile);
+    }
+
+    @RequestMapping(method = RequestMethod.GET,value="/productManual")
+    public @ResponseBody
+    ResponseEntity getProductManual(@RequestParam("productId") String productId) throws IOException {
+        return productService.downloadDocuments(productId);
     }
 
 }

@@ -6,6 +6,7 @@ import com.renergy.productService.productCategory.ProductCategory;
 import com.renergy.productService.productCategory.ProductCategoryRepository;
 import com.renergy.productService.responses.DefaultResponse;
 import com.renergy.productService.responses.ImageIdResponse;
+import com.renergy.productService.responses.ParentProduct;
 import com.renergy.productService.responses.UploadFileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +42,8 @@ public class ProductCategoryService {
 
         LOGGER.info("Adding new product category");
         productCategory.setUuid(UUID.randomUUID().toString());
+        Optional<ProductCategory> parentProductCategory = productCategoryRepository.findByUuid(productCategory.getParentCategoryUUID());
+        productCategory.setParentCategory(parentProductCategory.get());
         productCategoryRepository.save(productCategory);
         return new DefaultResponse("S001", "Product category added successfully");
     }
@@ -92,5 +96,25 @@ public class ProductCategoryService {
             return response = new UploadFileResponse("Failure","","");
         }
 
+    }
+
+    public List<ProductCategory> getAllMainProductCategories() {
+        List<ProductCategory> productCategories = productCategoryRepository.findAllByParentCategory(null);
+        List<ParentProduct> parentProducts = new ArrayList<>();
+        for(ProductCategory productCategory : productCategories) {
+            ParentProduct parentProduct = new ParentProduct(productCategory.getCategoryName(), productCategory.getUuid());
+            parentProducts.add(parentProduct);
+        }
+        return productCategories;
+    }
+
+    public DefaultResponse addParentProduct(String productName) {
+
+        ProductCategory productCategory = new ProductCategory();
+        productCategory.setCategoryName(productName);
+        productCategory.setUuid(UUID.randomUUID().toString());
+        productCategory.setParentCategory(null);
+        productCategoryRepository.save(productCategory);
+        return new DefaultResponse("200", "Product added successfully");
     }
 }

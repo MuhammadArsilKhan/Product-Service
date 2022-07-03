@@ -44,6 +44,8 @@ public class Product {
 
     private String imageName;
 
+    private String manualPath;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "product_category_id",referencedColumnName = "id")
