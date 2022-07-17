@@ -42,6 +42,8 @@ public class Product {
 
     private String efficiency;
 
+    private String euEfficiency;
+
     private String imageName;
 
     private String manualPath;
@@ -52,5 +54,5 @@ public class Product {
     private ProductCategory productCategory;
 
     @Transient
-    private Long categoryId;
+    private String categoryId;
 }

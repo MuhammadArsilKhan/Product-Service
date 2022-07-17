@@ -1,5 +1,6 @@
 package com.renergy.productService.productCategory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.renergy.productService.product.Product;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,7 @@ public class ProductCategory {
     @OneToMany(mappedBy = "productCategory" , fetch = FetchType.LAZY)
     private List<Product> productList = new ArrayList<>();
 
+    @JsonIgnore
     @ManyToOne
     private ProductCategory parentCategory;
 

@@ -50,7 +50,13 @@ public class ProductCategoryService {
 
     public List<ProductCategory> getAllProductCategories() {
         LOGGER.info("Getting list of all product categories");
-        return productCategoryRepository.findAll();
+        List<ProductCategory> productCategories = productCategoryRepository.findAll();
+        for(int i = 0; i < productCategories.size(); i++) {
+            if(productCategories.get(i).getParentCategory() == null) {
+                productCategories.remove(i);
+            }
+        }
+        return productCategories;
     }
 
     public ProductCategory getProductCategoryDetails(String id) {

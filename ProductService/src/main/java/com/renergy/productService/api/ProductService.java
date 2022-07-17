@@ -42,7 +42,7 @@ public class ProductService {
 
     public DefaultResponse addNewProduct(Product product) {
 
-        Optional<ProductCategory> productCategory = productCategoryRepository.findById(product.getCategoryId());
+        Optional<ProductCategory> productCategory = productCategoryRepository.findByUuid(product.getCategoryId());
         product.setProductCategory(productCategory.get());
         product.setDateAdded(new Date());
         product.setLastInventoryUpdateAt(new Date());
